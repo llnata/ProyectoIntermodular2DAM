@@ -3,7 +3,7 @@
 > Aplicación de gestión del tiempo para personas con pérdida de memoria o deterioro cognitivo.
 
 ![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-blue)
-![Plataforma](https://img.shields.io/badge/Plataforma-Android%20%7C%20JavaFX-brightgreen)
+![Plataforma](https://img.shields.io/badge/Plataforma-React%20Native-brightgreen)
 ![Ciclo](https://img.shields.io/badge/2DAM-Proyecto%20Intermodular-orange)
 
 ---
@@ -29,7 +29,6 @@ El proyecto nace de la necesidad de ofrecer una herramienta más inclusiva que l
 
 | Capa | Tecnología |
 |---|---|
-| Frontend escritorio | JavaFX + SceneBuilder |
 | Frontend móvil | React Native |
 | Backend | Spring Boot (Java) |
 | Base de datos | MongoDB |
@@ -62,7 +61,7 @@ ProyectoIntermodular2DAM/
 │   ├── mockups/          # Mockups SVG de todas las pantallas
 │   └── memoria/          # Documento de memoria del proyecto
 ├── src/
-│   ├── frontend/         # JavaFX / React Native
+│   ├── frontend/         # React Native
 │   └── backend/          # Spring Boot API
 ├── database/
 │   └── schema/           # Esquema MongoDB
