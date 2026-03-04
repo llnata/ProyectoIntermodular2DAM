@@ -1,95 +1,186 @@
 # 🌿 Recordis
 
-> Aplicación de gestión del tiempo para personas con pérdida de memoria o deterioro cognitivo.
+> Aplicación de gestión del tiempo pensada para personas con pérdida de memoria o deterioro cognitivo (Alzheimer temprano, daño cerebral, etc.).
 
 ![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-blue)
-![Plataforma](https://img.shields.io/badge/Plataforma-React%20Native-brightgreen)
+![Plataforma](https://img.shields.io/badge/Plataforma-React%20Native%20%2B%20Spring%20Boot-brightgreen)
 ![Ciclo](https://img.shields.io/badge/2DAM-Proyecto%20Intermodular-orange)
 
 ---
 
 ## 📋 Descripción
 
-**Recordis** es una aplicación multiplataforma diseñada para ayudar a personas con pérdida de memoria —tanto mayores como personas jóvenes con Alzheimer— a gestionar su día a día mediante rutinas semanales, recordatorios automáticos y una interfaz accesible e intuitiva.
-
-El proyecto nace de la necesidad de ofrecer una herramienta más inclusiva que las alternativas existentes (Habitify, HabitNow, Fabulous), específicamente adaptada a personas con deterioro cognitivo.
+**Recordis** es una aplicación multiplataforma que ayuda a organizar el día a día mediante actividades horarias, rutinas semanales y recordatorios visuales, con una interfaz adaptada a personas con dificultades de memoria y atención.  
+El foco está en que tanto la persona usuaria como su entorno (familiares, cuidadores) puedan consultar y mantener una planificación sencilla y muy visual.
 
 ---
 
 ## 🎯 Objetivos
 
-- Permitir crear rutinas semanales con actividades organizadas por horas
-- Enviar recordatorios automáticos y popups de aviso
-- Ofrecer una interfaz accesible: botones grandes, alto contraste, avatares predefinidos
-- Mejorar la autonomía y calidad de vida del usuario
+- Permitir crear y gestionar rutinas semanales con actividades organizadas por horas.  
+- Enviar recordatorios visuales mediante popups y notificaciones locales.  
+- Ofrecer una interfaz accesible: botones grandes, alto contraste, jerarquía visual clara y avatares predefinidos.  
+- Distinguir y resaltar **citas médicas** (hospital/centro de salud) frente al resto de actividades.  
+- Mejorar la autonomía y la calidad de vida de la persona usuaria y facilitar la supervisión a cuidadores.
 
 ---
 
-## 🖥️ Tecnologías utilizadas
+## 🛠️ Tecnologías utilizadas
 
-| Capa | Tecnología |
-|---|---|
-| Frontend móvil | React Native |
-| Backend | Spring Boot (Java) |
-| Base de datos | MongoDB |
-| Control de versiones | Git + GitHub |
-| Gestión de tareas | Trello (Kanban) |
-| Diseño UI | Figma |
-
----
-
-## 📱 Pantallas de la aplicación
-
-| # | Pantalla | Descripción |
-|---|---|---|
-| 01 | Selección de usuario | Pantalla de inicio con perfiles |
-| 01b | Crear perfil | Formulario con nombre, edad, género y avatar |
-| 02 | Vista semanal | Resumen de la semana con actividades del día |
-| 03 | Vista del día | Timeline de actividades con estado |
-| 04 | Detalle actividad | Información completa de una actividad |
-| 05 | Crear/Editar actividad | Formulario de nueva actividad |
-| 06 | Popup recordatorio | Aviso emergente automático |
-| 07 | Ajustes | Configuración de accesibilidad y notificaciones |
+| Capa / ámbito        | Tecnología / herramienta                  |
+|----------------------|-------------------------------------------|
+| Frontend móvil       | React Native (Expo)                      |
+| Backend API          | Spring Boot (Java)                       |
+| Base de datos        | MongoDB (Spring Data MongoDB)            |
+| Datos externos       | Open Data Valencia – Hospitales/centros de salud |
+| Control de versiones | Git + GitHub                             |
+| Gestión de tareas    | Trello (Kanban)                          |
+| Diseño UI            | Figma                                    |
 
 ---
 
-## 🗂️ Estructura del proyecto
+## 📱 Funcionalidades principales
 
-```
-ProyectoIntermodular2DAM/
-├── docs/
-│   ├── mockups/          # Mockups SVG de todas las pantallas
-│   └── memoria/          # Documento de memoria del proyecto
-├── src/
-│   ├── frontend/         # React Native
-│   └── backend/          # Spring Boot API
-├── database/
-│   └── schema/           # Esquema MongoDB
+- **Gestión de usuarios**  
+  - Creación de perfil con nombre, edad, género, color de tema y avatar.  
+  - Selección rápida de usuario desde el dashboard.
+
+- **Actividades y rutinas**  
+  - Creación, edición y eliminación de actividades diarias.  
+  - Vista semanal y vista de un solo día.  
+  - Estado de actividad (pendiente / completada) con codificación por colores.
+
+- **Citas médicas**  
+  - Marcar una actividad como *cita de salud*.  
+  - Seleccionar el centro sanitario desde un listado obtenido de la API de datos abiertos de Valencia.  
+  - Visualización de citas médicas con icono 🏥 y resaltado cuando están completadas.
+
+- **Resumen mensual**  
+  - Calendario con días que tienen actividades.  
+  - Contador de actividades totales y días activos del mes.  
+  - Listado de actividades por día desde el propio calendario.
+
+- **Accesibilidad y experiencia de uso**  
+  - Tipografías y tamaños adaptables mediante ajustes.  
+  - Interfaz simplificada con pocas pantallas clave y acciones claras.
+
+---
+
+## 🗂️ Estructura de los proyectos
+
+### 📁 Recordis (app móvil – React Native)
+
+Ruta base del proyecto de la app:
+
+```bash
+Recordis/
+├── assets/                          # Recursos estáticos (imágenes, iconos…)
+├── data/
+│   ├── api.js                       # Configuración cliente HTTP (Axios/fetch) hacia la API
+│   └── repositories/
+│       ├── actividadRepository.js
+│       └── usuarioRepository.js
+│
+├── domain/
+│   ├── entities/
+│   │   ├── Actividad.js
+│   │   └── Usuario.js
+│   └── usecases/
+│       ├── crearActividad.js
+│       ├── crearUsuario.js
+│       ├── getActividades.js
+│       ├── getCentrosSalud.js
+│       └── getUsuarios.js
+│
+├── presentation/
+│   ├── components/
+│   │   ├── RecordatorioGlobal.js
+│   │   ├── TarjetaActividad.js
+│   │   └── TarjetaUsuario.js
+│   ├── context/
+│   │   └── AjustesContext.js
+│   ├── navigation/
+│   │   └── AppNavigator.js
+│   └── screens/
+│       ├── Ajustes.js
+│       ├── CentrosSaludScreen.js
+│       ├── CrearActividad.js
+│       ├── CrearPerfil.js
+│       ├── Dashboard.js
+│       ├── DetalleActividad.js
+│       ├── EditarActividad.js
+│       ├── EditarPerfil.js
+│       ├── PerfilUsuario.js
+│       ├── SeleccionUsuario.js
+│       ├── VistaDia.js
+│       ├── VistaResumen.js
+│       └── VistaSemanal.js
+│
+├── utils/
+│   └── notificaciones.js            # Lógica de notificaciones locales
+│
+├── App.js                           # Entrada principal de la app
+├── app.json
+├── eas.json
+├── package.json
 └── README.md
-```
+📁 Api_Recordis (API – Spring Boot)
+Ruta base del proyecto backend (IntelliJ IDEA):
 
----
+bash
+Api_Recordis/
+├── src/
+│   ├── main/
+│   │   ├── java/com/recordis/api_recordis/
+│   │   │   ├── controller/
+│   │   │   │   ├── ActividadController.java
+│   │   │   │   └── UsuarioController.java
+│   │   │   ├── model/
+│   │   │   │   ├── Actividad.java
+│   │   │   │   └── Usuario.java
+│   │   │   ├── repository/
+│   │   │   │   ├── ActividadRepository.java
+│   │   │   │   └── UsuarioRepository.java
+│   │   │   └── ApiRecordisApplication.java   # Clase main (Spring Boot)
+│   │   └── resources/
+│   │       ├── static/
+│   │       ├── templates/
+│   │       └── application.properties        # Configuración MongoDB y puerto
+│   └── test/
+│       └── java/com/recordis/api_recordis/
+│           └── ApiRecordisApplicationTests.java
+│
+├── pom.xml                                  # Dependencias y configuración Maven
+└── README.md
+🚀 Puesta en marcha (resumen)
+Backend – Api_Recordis (Spring Boot + MongoDB)
+Configura la conexión a MongoDB en src/main/resources/application.properties, por ejemplo:
 
-## 📅 Planificación
+text
+spring.data.mongodb.uri=mongodb://localhost:27017/recordis
+spring.data.mongodb.database=recordis
+server.port=8080
 
-| Sprint | Fechas | Objetivos |
-|---|---|---|
-| Sprint 1 | 23/02 – 28/02 | Mockups, arquitectura, estructura del proyecto |
-| Sprint 2 | 01/03 – 04/03 | Desarrollo funcionalidades principales |
-| Sprint 3 | 05/03 – 06/03 | Testing, ajustes y entrega |
+Ejecuta la API:
 
-> 📌 **Fecha de entrega:** 06/03/2026 · **Defensa:** 12-13/03/2026
+bash
+cd Api_Recordis
+mvn spring-boot:run
+La API quedará disponible en http://localhost:8080.
 
----
+También puedes lanzar la API desde IntelliJ ejecutando la clase ApiRecordisApplication.
 
-## 👤 Autor
+Frontend – Recordis (React Native)
+Asegúrate de que la API está levantada y que data/api.js apunta a la URL correcta, por ejemplo:
 
-**Lluís Navalón Talens**  
-2º DAM — Desarrollo de Aplicaciones Multiplataforma  
-Florida Grup Educatiu · Alzira, Comunidad Valenciana
+js
+const api = axios.create({
+  baseURL: 'http://localhost:8080', // o la IP de tu PC en la red local
+});
+Instala dependencias e inicia la app:
 
----
-
-## 📄 Licencia
-
-Proyecto académico — Todos los derechos reservados © 2026 Lluís Navalón Talens
+bash
+cd Recordis
+npm install
+npm start
+Abre la app en un emulador o en un dispositivo físico con Expo Go.
