@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/actividades")   // <-- quitamos /api
+@RequestMapping("/actividades")   // <-- sin /api
 @CrossOrigin(origins = "*")
 public class ActividadController {
 
@@ -30,6 +30,7 @@ public class ActividadController {
 
     @PostMapping
     public Actividad create(@RequestBody Actividad actividad) {
+        // aquí ya llega esCitaSalud en el JSON y se guarda solo
         return actividadRepository.save(actividad);
     }
 
@@ -44,6 +45,8 @@ public class ActividadController {
         existente.setCompletada(incoming.isCompletada());
         existente.setUsuarioId(incoming.getUsuarioId());
         existente.setFecha(incoming.getFecha());
+        existente.setEsCitaSalud(incoming.isEsCitaSalud());
+        existente.setCentroSaludNombre(incoming.getCentroSaludNombre());
 
         return actividadRepository.save(existente);
     }

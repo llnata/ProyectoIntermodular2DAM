@@ -17,4 +17,7 @@ public class Actividad {
     private boolean completada;
     private String usuarioId;
     private String fecha;
+    private boolean esCitaSalud;
+    private String centroSaludNombre;
 }
+

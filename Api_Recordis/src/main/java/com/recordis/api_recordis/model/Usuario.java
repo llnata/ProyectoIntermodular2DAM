@@ -17,4 +17,6 @@ public class Usuario {
     private String color;
     private String genero;
     private String foto;
+    private int frecuenciaRecordatoriosMin;
 }
+
