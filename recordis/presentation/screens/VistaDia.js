@@ -22,7 +22,11 @@ export default function VistaDia({ route, navigation }) {
   // Al montar la pantalla, pedimos las actividades del día a la API
   useEffect(() => {
     fetchActividades(usuarioId, fecha)
-      .then((lista) => setActividades(lista))
+      .then((lista) =>
+        setActividades(
+          [...lista].sort((a, b) => (a.hora ?? '').localeCompare(b.hora ?? ''))
+        )
+      )
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

@@ -14,12 +14,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useAjustes } from '../context/AjustesContext';
 import api from '../../data/api';
 
+
 // Nombres de meses y cabecera de días de la semana
 const MESES = [
   'Enero','Febrero','Marzo','Abril','Mayo','Junio',
   'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre',
 ];
 const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
 
 // Calcula el offset (día de la semana del 1) y el número de días de un mes
 const getDiasDelMes = (anyo, mes) => {
@@ -29,12 +31,14 @@ const getDiasDelMes = (anyo, mes) => {
   return { offset, totalDias };
 };
 
+
 // Formatea una fecha como YYYY-MM-DD
 const formatFecha = (anyo, mes, dia) => {
   const m = String(mes + 1).padStart(2, '0');
   const d = String(dia).padStart(2, '0');
   return `${anyo}-${m}-${d}`;
 };
+
 
 export default function VistaResumen({ route, navigation }) {
   const { usuarioId } = route.params;
@@ -73,6 +77,14 @@ export default function VistaResumen({ route, navigation }) {
         if (!mapa[a.fecha]) mapa[a.fecha] = [];
         mapa[a.fecha].push(a);
       });
+
+      // ordenar actividades de cada día por hora ascendente
+      Object.keys(mapa).forEach((fecha) => {
+        mapa[fecha].sort((a, b) =>
+          (a.hora ?? '').localeCompare(b.hora ?? '')
+        );
+      });
+
       setActividadesPorDia(mapa);
     } catch (e) {
       console.error(e);
@@ -353,6 +365,7 @@ export default function VistaResumen({ route, navigation }) {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   // Estilos generales de la pantalla

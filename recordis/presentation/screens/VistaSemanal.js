@@ -6,8 +6,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { fetchActividades } from '../../domain/usecases/getActividades';
 import { useAjustes } from '../context/AjustesContext';
 
+
 // Etiquetas cortas para los días de la semana
 const DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
 
 // Convierte un objeto Date a cadena YYYY-MM-DD (zona local)
 const dateToLocalISO = (date) => {
@@ -16,6 +18,7 @@ const dateToLocalISO = (date) => {
   const dia = String(date.getDate()).padStart(2, '0');
   return `${año}-${mes}-${dia}`;
 };
+
 
 // Devuelve un array con las 7 fechas (YYYY-MM-DD) de la semana del lunes actual
 const getFechasSemana = () => {
@@ -29,6 +32,7 @@ const getFechasSemana = () => {
     return dateToLocalISO(d);
   });
 };
+
 
 export default function VistaSemanal({ route, navigation }) {
   const { usuarioId, nombre } = route.params;
@@ -48,7 +52,11 @@ export default function VistaSemanal({ route, navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetchActividades(usuarioId, diaSeleccionado)
-        .then((lista) => setActividades(lista))
+        .then((lista) =>
+          setActividades(
+            [...lista].sort((a, b) => (a.hora ?? '').localeCompare(b.hora ?? ''))
+          )
+        )
         .catch(console.error);
     }, [diaSeleccionado, usuarioId])
   );
@@ -60,6 +68,7 @@ export default function VistaSemanal({ route, navigation }) {
     const [y, m, d] = diaSeleccionado.split('-');
     return `${d}/${m}/${y}`;
   })();
+
 
   return (
     <View style={styles.container}>
@@ -226,6 +235,7 @@ export default function VistaSemanal({ route, navigation }) {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   // Fondo general y padding de la pantalla
