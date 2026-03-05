@@ -5,6 +5,5 @@ export async function fetchCentrosSalud() {
   if (!res.ok) throw new Error('Error al cargar centros de salud');
   const data = await res.json();
 
-  // Si data.results ya es el objeto con nombre/direccion en la raíz, lo devolvemos tal cual
   return data.results ?? [];
 }

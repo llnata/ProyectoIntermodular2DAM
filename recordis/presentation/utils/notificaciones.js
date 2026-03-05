@@ -1,4 +1,5 @@
 // presentation/utils/notificaciones.js
+// Utilidades para gestionar notificaciones locales con Expo (permisos y programación)
 import * as Notifications from 'expo-notifications';
 
 // Cómo se muestran cuando la app está en primer plano

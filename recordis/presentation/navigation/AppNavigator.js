@@ -1,7 +1,9 @@
 // presentation/navigation/AppNavigator.js
+// Navegador principal de la app: define todas las pantallas y la navegación tipo Stack
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import SeleccionUsuario from '../screens/SeleccionUsuario';
 import CrearPerfil from '../screens/CrearPerfil';
 import VistaSemanal from '../screens/VistaSemanal';
@@ -16,12 +18,19 @@ import VistaResumen from '../screens/VistaResumen';
 import EditarActividad from '../screens/EditarActividad';
 import CentrosSaludScreen from '../screens/CentrosSaludScreen';
 
+// Creamos el stack navigator de React Navigation
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   return (
+    // Contenedor de navegación que envuelve toda la app
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SeleccionUsuario" screenOptions={{ headerShown: false }}>
+      {/* Definición de la pila de pantallas */}
+      <Stack.Navigator
+        initialRouteName="SeleccionUsuario"   // Pantalla inicial al abrir la app
+        screenOptions={{ headerShown: false }} // Ocultamos el header por defecto
+      >
+        {/* Pantallas principales de la app */}
         <Stack.Screen name="SeleccionUsuario" component={SeleccionUsuario} />
         <Stack.Screen name="CrearPerfil" component={CrearPerfil} />
         <Stack.Screen name="VistaSemanal" component={VistaSemanal} />
@@ -34,7 +43,13 @@ export default function AppNavigator() {
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="VistaResumen" component={VistaResumen} />
         <Stack.Screen name="EditarActividad" component={EditarActividad} />
-        <Stack.Screen name="CentrosSalud" component={CentrosSaludScreen} options={{ title: 'Centros de salud' }} />
+
+        {/* Pantalla específica para listar centros de salud */}
+        <Stack.Screen
+          name="CentrosSalud"
+          component={CentrosSaludScreen}
+          options={{ title: 'Centros de salud' }} // Título si se mostrara el header
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

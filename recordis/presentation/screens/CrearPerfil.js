@@ -1,48 +1,67 @@
 // presentation/screens/CrearPerfil.js
+// Pantalla para crear un nuevo perfil de usuario (nombre, edad, género, avatar y color)
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { registrarUsuario } from '../../domain/usecases/crearUsuario';
 import { useAjustes } from '../context/AjustesContext';
 
+// Paleta de colores disponibles para el perfil
 const COLORES = ['#3B82F6', '#22C55E', '#F97316', '#A855F7', '#EF4444', '#EAB308'];
 
+// Avatares disponibles para género masculino (dos filas)
 const AVATARES_HOMBRE = [
   ['👦🏻', '👨🏻', '🧔🏻', '👴🏻'],
   ['👦🏿', '👨🏿', '🧔🏿', '👴🏿'],
 ];
 
+// Avatares disponibles para género femenino (dos filas)
 const AVATARES_MUJER = [
   ['👧🏻', '👩🏻', '👩🏻‍🦱', '👵🏻'],
   ['👧🏿', '👩🏿', '👩🏿‍🦱', '👵🏿'],
 ];
 
 export default function CrearPerfil({ navigation }) {
+  // Datos básicos del usuario
   const [nombre, setNombre] = useState('');
   const [edad, setEdad] = useState('');
   const [genero, setGenero] = useState('Hombre');
   const [avatarIndex, setAvatarIndex] = useState(0);
   const [color, setColor] = useState(COLORES[0]);
 
-  // intervalo global de recordatorios elegido en Ajustes (30, 60, 120, etc.)
+  // Intervalo global de recordatorios elegido en Ajustes (minutos)
   const { intervalo } = useAjustes();
 
+  // Seleccionamos el grid de avatares según el género actual
   const avataresGrid = genero === 'Hombre' ? AVATARES_HOMBRE : AVATARES_MUJER;
+  // Lo convertimos en un array plano para poder indexar fácilmente
   const avataresFlat = avataresGrid.flat();
 
+  // Handler para crear el usuario en la API
   const handleCrear = async () => {
+    // Validación mínima de campos obligatorios
     if (!nombre.trim() || !edad.trim()) {
       return Alert.alert('Error', 'Rellena nombre y edad');
     }
     try {
+      // Llamada al caso de uso que registra al usuario en el backend
       await registrarUsuario(
         nombre.trim(),
         parseInt(edad, 10),
         avataresFlat[avatarIndex],
         color,
         genero,
-        intervalo // frecuenciaRecordatoriosMin
+        intervalo // se guarda como frecuenciaRecordatoriosMin
       );
 
+      // Navegamos al dashboard una vez creado el perfil
       navigation.navigate('Dashboard');
     } catch (e) {
       Alert.alert('Error', 'No se pudo crear el usuario');
@@ -52,7 +71,7 @@ export default function CrearPerfil({ navigation }) {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
-      {/* Título superior */}
+      {/* Cabecera con título y explicación breve */}
       <View style={styles.headerBox}>
         <Text style={styles.headerTitulo}>Crear perfil</Text>
         <Text style={styles.headerSubtitulo}>
@@ -60,7 +79,7 @@ export default function CrearPerfil({ navigation }) {
         </Text>
       </View>
 
-      {/* Género */}
+      {/* Selección de género */}
       <Text style={styles.seccion}>Género</Text>
       <View style={styles.generoRow}>
         {['Hombre', 'Mujer'].map((g) => (
@@ -69,7 +88,7 @@ export default function CrearPerfil({ navigation }) {
             style={[styles.generoBtn, genero === g && styles.generoBtnActivo]}
             onPress={() => {
               setGenero(g);
-              setAvatarIndex(0);
+              setAvatarIndex(0); // reiniciamos la selección de avatar al cambiar de género
             }}
           >
             <Text style={styles.generoEmoji}>{g === 'Hombre' ? '👨' : '👩'}</Text>
@@ -86,7 +105,7 @@ export default function CrearPerfil({ navigation }) {
         ))}
       </View>
 
-      {/* Avatar */}
+      {/* Selección de avatar */}
       <Text style={styles.seccion}>Elige tu avatar</Text>
       <View style={styles.avatarGrid}>
         {avataresGrid.map((fila, filaIndex) => (
@@ -111,7 +130,7 @@ export default function CrearPerfil({ navigation }) {
         ))}
       </View>
 
-      {/* Nombre */}
+      {/* Campo de nombre */}
       <Text style={styles.seccion}>Nombre</Text>
       <TextInput
         style={styles.input}
@@ -121,7 +140,7 @@ export default function CrearPerfil({ navigation }) {
         placeholderTextColor="#94A3B8"
       />
 
-      {/* Edad */}
+      {/* Campo de edad */}
       <Text style={styles.seccion}>Edad</Text>
       <View style={styles.edadRow}>
         <TextInput
@@ -135,7 +154,7 @@ export default function CrearPerfil({ navigation }) {
         <Text style={styles.años}>años</Text>
       </View>
 
-      {/* Color */}
+      {/* Selección de color de perfil */}
       <Text style={styles.seccion}>Color de perfil</Text>
       <View style={styles.coloresRow}>
         {COLORES.map((c) => {
@@ -154,7 +173,7 @@ export default function CrearPerfil({ navigation }) {
         })}
       </View>
 
-      {/* Botón guardar */}
+      {/* Botón para guardar el perfil */}
       <TouchableOpacity
         style={[styles.boton, { backgroundColor: color }]}
         onPress={handleCrear}
@@ -166,9 +185,11 @@ export default function CrearPerfil({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // Fondo general de la pantalla
   scroll: { backgroundColor: '#EFF6FF' },
   container: { padding: 24, paddingBottom: 48 },
 
+  // Cabecera con título y subtítulo
   headerBox: {
     marginTop: 40,
     marginBottom: 16,
@@ -184,6 +205,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
   },
 
+  // Título de cada sección
   seccion: {
     fontSize: 16,
     fontWeight: '700',
@@ -192,6 +214,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  // Fila de botones de género
   generoRow: { flexDirection: 'row', gap: 12 },
   generoBtn: {
     flex: 1,
@@ -217,6 +240,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
+  // Grid de avatares
   avatarGrid: { gap: 12 },
   avatarFila: { flexDirection: 'row', justifyContent: 'space-between' },
   avatarBtn: {
@@ -233,6 +257,7 @@ const styles = StyleSheet.create({
   avatarBtnActivo: { borderColor: '#3B82F6' },
   avatarEmoji: { fontSize: 34 },
 
+  // Input para el nombre
   input: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
@@ -243,6 +268,7 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
 
+  // Fila para la edad (input + texto "años")
   edadRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   inputEdad: {
     backgroundColor: '#FFFFFF',
@@ -256,6 +282,7 @@ const styles = StyleSheet.create({
   },
   años: { fontSize: 16, color: '#64748B' },
 
+  // Circulitos de color disponibles
   coloresRow: { flexDirection: 'row', gap: 12, marginTop: 4 },
   colorCirculo: { width: 44, height: 44, borderRadius: 22 },
   colorActivo: {
@@ -263,6 +290,7 @@ const styles = StyleSheet.create({
     borderColor: '#111827',
   },
 
+  // Botón principal de guardar perfil
   boton: {
     marginTop: 32,
     paddingVertical: 18,

@@ -1,25 +1,41 @@
 // presentation/screens/EditarActividad.js
+// Pantalla para editar o eliminar una actividad existente
 import React, { useState, useEffect } from 'react';
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,ScrollView,Alert,Modal,FlatList,} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Modal,
+  FlatList,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAjustes } from '../context/AjustesContext';
 import api from '../../data/api';
 import { fetchCentrosSalud } from '../../domain/usecases/getCentrosSalud';
 
 export default function EditarActividad({ route, navigation }) {
+  // Recibimos la actividad, el usuario y el nombre del usuario desde la navegación
   const { actividad, usuarioId, nombre } = route.params || {};
   const { fs } = useAjustes();
 
+  // Id de la actividad (puede venir como id o _id)
   const actividadId = actividad.id ?? actividad._id;
 
+  // Estado del formulario (inicializado con los datos de la actividad)
   const [titulo, setTitulo] = useState(actividad.titulo ?? '');
   const [descripcion, setDescripcion] = useState(actividad.descripcion ?? '');
   const [hora, setHora] = useState(actividad.hora ?? '');
   const [completada, setCompletada] = useState(actividad.completada ?? false);
   const [guardando, setGuardando] = useState(false);
 
+  // Estado para el selector de hora
   const [mostrarPickerHora, setMostrarPickerHora] = useState(false);
   const [horaDate, setHoraDate] = useState(() => {
+    // Si la actividad ya tiene hora, la usamos para inicializar el Date
     const d = new Date();
     if (actividad.hora) {
       const [hh, mm] = actividad.hora.split(':');
@@ -29,17 +45,18 @@ export default function EditarActividad({ route, navigation }) {
     return d;
   });
 
-  // cita de salud
+  // Marca si la actividad es una cita de salud
   const [esCitaSalud, setEsCitaSalud] = useState(actividad.esCitaSalud ?? false);
 
-  // NUEVO: centro de salud seleccionado
+  // Centro de salud asociado a la actividad
   const [centroSaludId, setCentroSaludId] = useState(actividad.centroSaludId ?? null);
   const [centroSaludNombre, setCentroSaludNombre] = useState(actividad.centroSaludNombre ?? '');
 
-  // NUEVO: lista y selector de centros
+  // Lista de centros y estado del selector (modal)
   const [centros, setCentros] = useState([]);
   const [selectorVisible, setSelectorVisible] = useState(false);
 
+  // Si la actividad no tenía hora, ponemos la hora actual por defecto
   useEffect(() => {
     if (!hora) {
       const ahora = new Date();
@@ -50,13 +67,14 @@ export default function EditarActividad({ route, navigation }) {
     }
   }, []);
 
+  // Cargar una vez la lista de centros de salud
   useEffect(() => {
-    // cargar centros de salud una vez
     fetchCentrosSalud()
       .then(setCentros)
       .catch(console.error);
   }, []);
 
+  // Volver a la vista semanal del usuario
   const volverASemana = () => {
     navigation.navigate('VistaSemanal', {
       usuarioId,
@@ -64,7 +82,9 @@ export default function EditarActividad({ route, navigation }) {
     });
   };
 
+  // Guardar cambios de la actividad
   const handleGuardar = async () => {
+    // Validaciones mínimas
     if (!titulo.trim() || !hora.trim()) {
       Alert.alert('Error', 'El título y la hora son obligatorios');
       return;
@@ -99,6 +119,7 @@ export default function EditarActividad({ route, navigation }) {
     }
   };
 
+  // Eliminar la actividad actual (con confirmación)
   const handleBorrar = () => {
     if (!actividadId) {
       Alert.alert('Error', 'La actividad no tiene id, no se puede borrar');
@@ -128,6 +149,7 @@ export default function EditarActividad({ route, navigation }) {
     );
   };
 
+  // Cuando el usuario elige un centro en el modal
   const seleccionarCentro = (c) => {
     const nombreCentro =
       c.nombre ?? c.name ?? c.nom_centro ?? 'Centro de salud';
@@ -141,11 +163,15 @@ export default function EditarActividad({ route, navigation }) {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
+      {/* Botón para volver atrás */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
         <Text style={[styles.backTexto, { fontSize: fs(17) }]}>← Volver</Text>
       </TouchableOpacity>
 
-      <Text style={[styles.tituloPagina, { fontSize: fs(26) }]}>✏️ Editar actividad</Text>
+      {/* Título de pantalla y fecha de la actividad */}
+      <Text style={[styles.tituloPagina, { fontSize: fs(26) }]}>
+        ✏️ Editar actividad
+      </Text>
       <Text style={[styles.subtitulo, { fontSize: fs(15) }]}>
         Para el día {actividad.fecha}
       </Text>
@@ -166,6 +192,7 @@ export default function EditarActividad({ route, navigation }) {
       <View style={styles.bloque}>
         <Text style={[styles.label, { fontSize: fs(13) }]}>HORA</Text>
         <View style={styles.horaRow}>
+          {/* Campo de texto donde se puede escribir la hora */}
           <TextInput
             style={[styles.inputHora, { fontSize: fs(20) }]}
             value={hora}
@@ -175,6 +202,7 @@ export default function EditarActividad({ route, navigation }) {
             keyboardType="numeric"
             maxLength={5}
           />
+          {/* Botón que abre el selector nativo de hora */}
           <TouchableOpacity
             style={styles.horaIcon}
             onPress={() => setMostrarPickerHora(true)}
@@ -183,6 +211,7 @@ export default function EditarActividad({ route, navigation }) {
           </TouchableOpacity>
         </View>
 
+        {/* Selector de hora (DateTimePicker) */}
         {mostrarPickerHora && (
           <DateTimePicker
             value={horaDate}
@@ -223,6 +252,7 @@ export default function EditarActividad({ route, navigation }) {
       {/* TIPO DE ACTIVIDAD: Cita de salud */}
       <View style={styles.bloque}>
         <Text style={[styles.label, { fontSize: fs(13) }]}>TIPO DE ACTIVIDAD</Text>
+        {/* Checkbox que marca si es cita de salud */}
         <TouchableOpacity
           style={styles.checkboxRow}
           onPress={() => setEsCitaSalud((v) => !v)}
@@ -240,7 +270,7 @@ export default function EditarActividad({ route, navigation }) {
           </View>
         </TouchableOpacity>
 
-        {/* NUEVO: botón para seleccionar centro de salud */}
+        {/* Botón para abrir el selector de centros de salud */}
         <TouchableOpacity
           style={[
             styles.centroBtn,
@@ -257,11 +287,14 @@ export default function EditarActividad({ route, navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* ESTADO */}
+      {/* ESTADO (pendiente/completada) */}
       <View style={styles.bloque}>
         <Text style={[styles.label, { fontSize: fs(13) }]}>ESTADO</Text>
         <TouchableOpacity
-          style={[styles.toggleBtn, completada ? styles.toggleCompleta : styles.togglePendiente]}
+          style={[
+            styles.toggleBtn,
+            completada ? styles.toggleCompleta : styles.togglePendiente,
+          ]}
           onPress={() => setCompletada(!completada)}
         >
           <Text style={[styles.toggleTexto, { fontSize: fs(16) }]}>
@@ -270,7 +303,7 @@ export default function EditarActividad({ route, navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* GUARDAR */}
+      {/* BOTÓN GUARDAR */}
       <TouchableOpacity
         style={[styles.botonGuardar, guardando && { opacity: 0.7 }]}
         onPress={handleGuardar}
@@ -281,7 +314,7 @@ export default function EditarActividad({ route, navigation }) {
         </Text>
       </TouchableOpacity>
 
-      {/* BORRAR */}
+      {/* BOTÓN BORRAR */}
       <TouchableOpacity
         style={styles.botonBorrar}
         onPress={handleBorrar}
@@ -312,6 +345,7 @@ export default function EditarActividad({ route, navigation }) {
                 </TouchableOpacity>
               )}
             />
+            {/* Botón para cerrar el modal sin seleccionar nada */}
             <TouchableOpacity
               style={styles.modalCerrar}
               onPress={() => setSelectorVisible(false)}
@@ -326,6 +360,7 @@ export default function EditarActividad({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // Fondo general de la pantalla
   scroll: { backgroundColor: '#EFF6FF' },
   container: { padding: 24, paddingBottom: 48 },
   backBtn: { marginTop: 52, marginBottom: 16 },
@@ -334,9 +369,17 @@ const styles = StyleSheet.create({
   tituloPagina: { fontWeight: 'bold', color: '#000000' },
   subtitulo: { color: '#64748B', marginTop: 4, marginBottom: 20 },
 
-  bloque: { backgroundColor: '#fff', borderRadius: 18, padding: 16, marginBottom: 16, elevation: 2 },
+  // Bloques blancos del formulario
+  bloque: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 2,
+  },
   label: { color: '#94A3B8', fontWeight: '700', letterSpacing: 1 },
 
+  // Inputs genéricos
   input: {
     backgroundColor: '#F8FAFC',
     borderRadius: 12,
@@ -345,6 +388,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginTop: 8,
   },
+  // Fila de hora (input + icono)
   horaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
   inputHora: {
     flex: 1,
@@ -366,6 +410,7 @@ const styles = StyleSheet.create({
   },
   horaIconTexto: { fontSize: 24 },
 
+  // Input multilinea para descripción
   inputMultilinea: {
     backgroundColor: '#F8FAFC',
     borderRadius: 12,
@@ -376,6 +421,7 @@ const styles = StyleSheet.create({
     minHeight: 110,
   },
 
+  // Checkbox tipo de actividad
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginTop: 12 },
   checkbox: {
     width: 24,
@@ -395,7 +441,7 @@ const styles = StyleSheet.create({
   checkboxTexto: { color: '#1E3A8A', fontWeight: '600' },
   checkboxHelp: { color: '#94A3B8', marginTop: 2 },
 
-  // botón centro salud
+  // Botón para abrir el selector de centro de salud
   centroBtn: {
     marginTop: 12,
     paddingVertical: 12,
@@ -412,6 +458,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // Botón de estado completada/pendiente
   toggleBtn: {
     marginTop: 8,
     padding: 14,
@@ -422,6 +469,7 @@ const styles = StyleSheet.create({
   togglePendiente: { backgroundColor: '#FEF9C3' },
   toggleTexto: { fontWeight: '700', color: '#000000' },
 
+  // Botón guardar cambios
   botonGuardar: {
     backgroundColor: '#3B82F6',
     padding: 18,
@@ -432,6 +480,7 @@ const styles = StyleSheet.create({
   },
   botonGuardarTexto: { color: '#fff', fontWeight: '700' },
 
+  // Botón eliminar actividad
   botonBorrar: {
     backgroundColor: '#FEE2E2',
     padding: 16,
@@ -444,7 +493,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // estilos modal centros
+  // Estilos del modal de centros de salud
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.35)',
